@@ -29,6 +29,11 @@ MENU_CONTINUA = """Deseja continuar?
 1 - SIM
 """
 
+MENU_DESEJA = """Deseja mesmo excluir o registro abaixo?
+0 - NÃO
+1 - SIM
+"""
+
 # Consulta de contagem de registros por tabela
 def query_count(collection_name):
    mongo = MongoQueries()

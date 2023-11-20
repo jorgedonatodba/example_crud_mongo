@@ -1,4 +1,5 @@
 from utils.config import Recupera
+from utils import config
 import pandas as pd
 from model.clientes import Cliente
 from conexion.mongo_queries import MongoQueries
@@ -79,6 +80,26 @@ class Controller_Cliente:
         if not self.verifica_existencia_cliente(cpf):            
             # Recupera os dados do novo cliente criado transformando em um DataFrame
             df_cliente = self.recupera_cliente(cpf)
+
+            # Cria um novo objeto Cliente
+            novo_cliente = Cliente(df_cliente.id.values[0], df_cliente.cpf.values[0], df_cliente.nome.values[0], df_cliente.endereco.values[0], df_cliente.telefone.values[0])
+            # Solicita ao usuário se deseja excluir o cliente
+            config.clear_console(1)
+            print(config.MENU_DESEJA)
+            # Exibe os atributos do novo cliente
+            print(novo_cliente.to_string())
+            opcao_deseja = int(input("Escolha uma opção [0-1]: "))        
+
+            if opcao_deseja == 0:
+                print("Registro não será excluído")
+                self.mongo.close()
+                return None
+            
+            '''idcliente = df_cliente.id.values[0]
+            # Recupera os dados do novo cliente criado transformando em um DataFrame
+            df_cliente = self.recupera_contas(idcliente)'''
+
+
             # Revome o cliente da tabela
             self.mongo.db["clientes"].delete_one({"cpf":f"{cpf}"})
             # Cria um novo objeto Cliente para informar que foi removido
@@ -109,3 +130,17 @@ class Controller_Cliente:
             self.mongo.close()
 
         return df_cliente
+    
+    def recupera_contas(self, pidcliente:str=None, external:bool=False) -> pd.DataFrame:
+        if external:
+            # Cria uma nova conexão com o banco que permite alteração
+            self.mongo.connect()
+
+        # Recupera os dados ddas contas criado transformando em um DataFrame
+        df_contas = pd.DataFrame(list(self.mongo.db["clientes"].find({"id_cliente":f"{pidcliente}"}, {"id":1 ,"numero": 1, "tipo": 1, "endereco": 1, "telefone": 1, "_id": 0})))
+        
+        if external:
+            # Fecha a conexão com o Mongo
+            self.mongo.close()
+
+        return df_contas
