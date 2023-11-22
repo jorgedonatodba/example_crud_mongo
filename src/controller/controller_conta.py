@@ -1,22 +1,31 @@
+import pandas as pd
+from bson import ObjectId
+from utils.config import Recupera
+
+from reports.relatorios import Relatorio
+
 from model.contas import Conta
 from model.clientes import Cliente
-from conexion.oracle_queries import OracleQueries
+from conexion.mongo_queries import MongoQueries
+from controller.controller_cliente import Controller_Cliente
 
 class Controller_Conta:
     def __init__(self):
-        pass
+        self.ctrl_cliente = Controller_Cliente()
+        self.recupera = Recupera()
+        self.mongo = MongoQueries()
+        self.relatorio = Relatorio()
+
         
     def inserir_conta(self) -> Conta:
-        ''' Ref.: https://cx-oracle.readthedocs.io/en/latest/user_guide/plsql_execution.html#anonymous-pl-sql-blocks'''
         
-        # Cria uma nova conexão com o banco que permite alteração
-        oracle = OracleQueries(can_write=True)
-        oracle.connect()
+        # Cria uma nova conexão com o banco
+        self.mongo.connect()
 
         # Solicita ao usuario o novo CNPJ
         nconta = input("N. Conta (Nova): ")
 
-        if self.verifica_existencia_conta(oracle, nconta):
+        if self.verifica_existencia_conta(nconta):
             # Solicita ao usuario o tipo da conta
             tipo = input("Tipo Conta (corrente, poupanca, credito) (Nova): ")
             # Solicita ao usuario o saldo da nova conta
@@ -25,7 +34,12 @@ class Controller_Conta:
             limite = input("Limite de Crédito (Nova): ")
             
             # Recupera dos clientes criado transformando em um DataFrame
-            df_cliente = oracle.sqlToDataFrame(f"select id,nome,cpf,endereco,telefone from clientes")
+            df_cliente = pd.DataFrame(list(self.mongo.db["clientes"].find({}, {"id":1, 
+                                                                            "nome": 1, 
+                                                                             "cpf": 1, 
+                                                                             "endereco": 1, 
+                                                                             "telefone": 1, 
+                                                                             "_id": 0})))
 
             for i in range(df_cliente.index.size):
                 # Cria um novo objeto Cliente
@@ -35,15 +49,18 @@ class Controller_Conta:
 
             ncpf = input('Favor, informar CPF para a nova conta: ')
 
-            dfclientid = oracle.sqlToDataFrame(f"select id from clientes where cpf = '{ncpf}'")
-            codcli = dfclientid.id.values[0]
+            dfclientid = self.ctrl_cliente.recupera_cliente(ncpf,True)
+            codcli = int(dfclientid.id.values[0])
             
-            # Insere e persiste o novo conta
-            oracle.write(f"insert into contas values (seq_contas_id.nextval, '{nconta}', '{tipo}', '{saldo}', '{limite}', {codcli})")
+            novo_id = int(self.recupera.recupera_prox_id("contas"))
+
+            # Insere e persiste a nova conta
+            self.mongo.db["contas"].insert_one({"id": novo_id, "numero": nconta, "tipo": tipo, "saldo": saldo, "limite": limite, "id_cliente": codcli})
+
             # Recupera os dados do novo conta criado transformando em um DataFrame
-            df_conta = oracle.sqlToDataFrame(f"select id,numero,tipo,saldo, limite from contas where numero = '{nconta}'")
+            df_conta = self.recupera_conta(nconta)
             # Cria um novo objeto conta
-            nova_conta = Conta(df_conta.id.values[0], df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0])
+            nova_conta = Conta(df_conta.id.values[0], df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0], df_conta)
             # Exibe os atributos do novo conta
             print(nova_conta.to_string())
             # Retorna o objeto novo_conta para utilização posterior, caso necessário
@@ -103,7 +120,32 @@ class Controller_Conta:
         else:
             print(f"A Conta {nconta} não existe.")
 
-    def verifica_existencia_conta(self, oracle:OracleQueries, nconta:str=None) -> bool:
+    def verifica_existencia_conta(self, nconta:str=None) -> bool:
         # Recupera os dados do novo conta criado transformando em um DataFrame
-        df_conta = oracle.sqlToDataFrame(f"select 1 from contas where numero = '{nconta}'")
+        df_conta = self.recupera_conta_codigo(codigo=nconta)
         return df_conta.empty
+    
+    def recupera_conta_codigo(self, codigo:int=None) -> pd.DataFrame:
+        # Recupera os dados da nova conta criada transformando em um DataFrame
+        df_codigo = pd.DataFrame(list(self.mongo.db["contas"].find({"numero": codigo}, {"id": 1,  
+                                                                                                          "numero": 1, 
+                                                                                                          "tipo": 1, 
+                                                                                                          "saldo": 1, 
+                                                                                                          "limite": 1,
+                                                                                                          "id_cliente": 1,
+                                                                                                          "_id": 0})))
+        return df_codigo
+
+    def recupera_conta(self, nconta:int=None, external:bool=False) -> pd.DataFrame:
+        if external:
+            # Cria uma nova conexão com o banco que permite alteração
+            self.mongo.connect()
+
+        # Recupera os dados do novo cliente criado transformando em um DataFrame
+        df_conta = pd.DataFrame(list(self.mongo.db["contas"].find({"numero":f"{nconta}"}, {"id": 1, "numero": 1, "tipo": 1, "saldo": 1, "limite": 1, "id_cliente": 1, "_id": 0})))
+        
+        if external:
+            # Fecha a conexão com o Mongo
+            self.mongo.close()
+
+        return df_conta

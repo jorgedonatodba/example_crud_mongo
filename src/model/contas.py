@@ -9,14 +9,14 @@ class Conta:
                  tipo:str=None,
                  saldo:float=None,
                  limite:float=None,
-                 cliente:Cliente= None
+                 id_cliente:int= None
                  ):
         self.set_id(id)
         self.set_numero(numero)
         self.set_tipo(tipo)
         self.set_saldo(saldo)
         self.set_limite(limite)
-        self.set_cliente(cliente)
+        self.set_cliente(id_cliente)
     
     def set_id(self, id:int):
         self.id = id
@@ -33,8 +33,8 @@ class Conta:
     def set_limite(self, limite:float):
         self.limite = limite
 
-    def set_cliente(self, cliente:Cliente):
-        self.cliente = cliente
+    def set_cliente(self, id_cliente:int):
+        self.cliente = id_cliente
 
     def get_id(self) -> int:
         return self.id
@@ -51,8 +51,8 @@ class Conta:
     def get_limite(self) -> float:
         return self.limite
     
-    def get_cliente(self) -> Cliente:
-        return self.cliente
+    def get_cliente(self) -> int:
+        return self.id_cliente
     
     def to_string(self) -> str:
         return f"Conta n: {self.get_numero()} | Tipo Conta: {self.get_tipo()} | Saldo: {self.get_saldo()} | Limite Conta: {self.get_limite()}"

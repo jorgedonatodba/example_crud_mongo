@@ -3,7 +3,7 @@ from utils.splash_screen import SplashScreen
 from reports.relatorios import Relatorio
 #from controller.controller_produto import Controller_Produto
 from controller.controller_cliente import Controller_Cliente
-#from controller.controller_fornecedor import Controller_Fornecedor
+from controller.controller_conta import Controller_Conta
 #from controller.controller_pedido import Controller_Pedido
 #from controller.controller_item_pedido import Controller_Item_Pedido
 
@@ -62,7 +62,7 @@ tela_inicial = SplashScreen()
 relatorio = Relatorio()
 #ctrl_produto = Controller_Produto()
 ctrl_cliente = Controller_Cliente()
-#ctrl_fornecedor = Controller_Fornecedor()
+ctrl_conta = Controller_Conta()
 #ctrl_pedido = Controller_Pedido()
 #ctrl_item_pedido = Controller_Item_Pedido()
 
@@ -88,7 +88,7 @@ def inserir(opcao_inserir:int=0):
         config.clear_console(1)
         deseja_continuar_inserir(1)
     elif opcao_inserir == 2:
-        a=1
+        nova_conta = ctrl_conta.inserir_conta()
     elif opcao_inserir == 3:
         a=1
         #novo_fornecedor = ctrl_fornecedor.inserir_fornecedor()
