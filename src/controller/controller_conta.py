@@ -71,52 +71,58 @@ class Controller_Conta:
 
     def atualizar_conta(self) -> Conta:
         # Cria uma nova conexão com o banco que permite alteração
-        oracle = OracleQueries(can_write=True)
-        oracle.connect()
+        self.mongo.connect()
 
         # Solicita ao usuário o código do conta a ser alterado
         nconta = input("Número da conta que deseja atualizar: ")
 
         # Verifica se o conta existe na base de dados
-        if not self.verifica_existencia_conta(oracle, nconta):
+        if not self.verifica_existencia_conta(nconta):
             # Solicita ao usuario o novo tipo da Conta
             ntipo = input("Tipo Conta (corrente, poupanca, credito): ")
             # Solicita ao usuario a nova razão social
             nlimite = input("Novo Limite: ")
            
             # Atualiza o nome do conta existente
-            oracle.write(f"update contas set tipo = '{ntipo}', limite = '{nlimite}'  where numero = {nconta}")
+            self.mongo.db["contas"].update_one({"numero": f"{nconta}"}, {"$set": {"tipo": ntipo, "limite": nlimite}})
             # Recupera os dados do novo conta criado transformando em um DataFrame
-            df_conta = oracle.sqlToDataFrame(f"select numero,tipo,saldo, limite from contas where numero = '{nconta}'")
+            df_conta = self.recupera_conta(nconta)
             # Cria um novo objeto conta
-            conta_atualizado = Conta(df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0])
+            conta_atualizada = Conta(df_conta.id.values[0],df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0], df_conta.id_cliente.values[0])
             # Exibe os atributos do novo conta
-            print(conta_atualizado.to_string())
+            print(conta_atualizada.to_string())
             # Retorna o objeto conta_atualizado para utilização posterior, caso necessário
-            return conta_atualizado
+            return conta_atualizada
         else:
             print(f"A conta {nconta} não existe.")
             return None
 
     def excluir_conta(self):
         # Cria uma nova conexão com o banco que permite alteração
-        oracle = OracleQueries(can_write=True)
-        oracle.connect()
+        self.mongo.connect()
 
         # Solicita ao usuário o CPF do conta a ser alterado
         nconta = input("Informar Número do conta que irá excluir: ")      
 
         # Verifica se o conta existe na base de dados
-        if not self.verifica_existencia_conta(oracle, nconta):            
+        if not self.verifica_existencia_conta(nconta):            
             # Recupera os dados do novo conta criado transformando em um DataFrame
-            df_conta = oracle.sqlToDataFrame(f"select numero,tipo,saldo, limite from contas where numero = '{nconta}'")
-            # Revome o conta da tabela
-            oracle.write(f"delete from contas where numero = {nconta}")            
-            # Cria um novo objeto conta para informar que foi removido
-            conta_excluido = Conta(df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0])
-            # Exibe os atributos do conta excluído
-            print("conta Removido com Sucesso!")
-            print(conta_excluido.to_string())
+            df_conta = self.recupera_conta(nconta)
+            opcao_excluir = input(f"Tem certeza que deseja excluir o pedido {nconta} [S ou N]: ")
+            if opcao_excluir.lower() == "s":
+                print("Atenção, caso a conta possua movimentações, a mesma não poderá ser excluída!")
+                opcao_excluir = input(f"Tem certeza que deseja excluir a conta {codigo_pedido} [S ou N]: ")
+                if opcao_excluir.lower() == "s":
+                    # Revome o produto da tabela
+                    self.mongo.db["itens_pedido"].delete_one({"codigo_pedido": codigo_pedido})
+                    print("Itens do pedido removidos com sucesso!")
+                    self.mongo.db["pedidos"].delete_one({"codigo_pedido": codigo_pedido})
+                    # Cria um novo objeto Produto para informar que foi removido
+                    pedido_excluido = Pedido(df_pedido.codigo_pedido.values[0], df_pedido.data_pedido.values[0], cliente, fornecedor)
+                    self.mongo.close()
+                    # Exibe os atributos do produto excluído
+                    print("Pedido Removido com Sucesso!")
+                    print(pedido_excluido.to_string())
         else:
             print(f"A Conta {nconta} não existe.")
 

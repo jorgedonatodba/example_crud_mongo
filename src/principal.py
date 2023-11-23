@@ -71,7 +71,7 @@ def reports(opcao_relatorio:int=0):
     if opcao_relatorio == 1:
         relatorio.get_relatorio_clientes()            
 '''    elif opcao_relatorio == 2:
-        relatorio.get_relatorio_pedidos()
+        relatorio.get_relatorio_contas()
     elif opcao_relatorio == 3:
         relatorio.get_relatorio_produtos()
     elif opcao_relatorio == 4:
@@ -107,10 +107,10 @@ def atualizar(opcao_atualizar:int=0):
         config.clear_console(1)
         deseja_continuar_atualizar(1)
 
-'''    elif opcao_atualizar == 2:
-        relatorio.get_relatorio_clientes()
-        cliente_atualizado = ctrl_cliente.atualizar_cliente()
-    elif opcao_atualizar == 3:
+    elif opcao_atualizar == 2:
+        #relatorio.get_relatorio_contas()
+        conta_atualizada = ctrl_conta.atualizar_conta()
+'''    elif opcao_atualizar == 3:
         relatorio.get_relatorio_fornecedores()
         fornecedor_atualizado = ctrl_fornecedor.atualizar_fornecedor()
     elif opcao_atualizar == 4:
