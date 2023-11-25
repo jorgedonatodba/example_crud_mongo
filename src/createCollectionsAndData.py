@@ -3,7 +3,7 @@ from conexion.mongo_queries import MongoQueries
 from conexion.oracle_queries import OracleQueries
 import json
 
-LIST_OF_COLLECTIONS = ["clientes", "contas","movimentacoes"]
+LIST_OF_COLLECTIONS = ["counters","clientes", "contas","movimentacoes"]
 logger = logging.getLogger(name="Example_CRUD_MongoDB")
 logger.setLevel(level=logging.WARNING)
 mongo = MongoQueries()
@@ -37,22 +37,42 @@ def insert_many(data:json, collection:str):
     mongo.db[collection].insert_many(data)
     mongo.close()
 
-def extract_and_insert():
+def extract_and_insert(plista:list=None) -> list:
     oracle = OracleQueries()
     oracle.connect()
     sql = "select * from ivie.{table}"
     for collection in LIST_OF_COLLECTIONS:
-        df = oracle.sqlToDataFrame(sql.format(table=collection))
-        if collection == "movimentacoes":
-            df["data"] = df["data"].dt.strftime("%m-%d-%Y")
-        logger.warning(f"data extracted from database Oracle ivie.{collection}")
-        records = json.loads(df.T.to_json()).values()
-        logger.warning("data converted to json")
-        insert_many(data=records, collection=collection)
-        logger.warning(f"documents generated at {collection} collection")
+        if collection != "counters":
+            df = oracle.sqlToDataFrame(sql.format(table=collection))
+            sql = f"select seq_{collection}_id.currval +1 as num from dual"
+            df_qtd = oracle.sqlToDataFrame(sql)
+            qtd = int(df_qtd.num.values[0])
+            plista.append(qtd)
+
+            if collection == "movimentacoes":
+                df["data"] = df["data"].dt.strftime("%m-%d-%Y")
+            logger.warning(f"data extracted from database Oracle ivie.{collection}")
+            records = json.loads(df.T.to_json()).values()
+            logger.warning("data converted to json")
+            insert_many(data=records, collection=collection)
+            logger.warning(f"documents generated at {collection} collection")
+    return plista
+
+def setar_sequences(plista:list=None) -> None:
+    i = -1
+    mongo.connect()
+    for collection in LIST_OF_COLLECTIONS:
+        if collection != "counters":
+            i = i +1
+            mongo.db["counters"].insert_one({"_id": f"sequence{collection}","sequence": 0})
+
+    mongo.close()
+
 
 if __name__ == "__main__":
+    qtds = list()
     logging.warning("Starting")
     createCollections(drop_if_exists=True)
-    extract_and_insert()
+    llista = extract_and_insert(qtds)
+    setar_sequences(llista)
     logging.warning("End")
