@@ -45,6 +45,29 @@ def query_count(collection_name):
    df = pd.DataFrame({f"total_{collection_name}": [total_documentos]})
    return df
 
+def count_collection(collection_name_a:str="contas", collection_name_b:str="movimentacoes" , pid:int=None) -> list:
+   mongo = MongoQueries()
+   mongo.connect()
+   pid = int(pid)
+   returnlist = [0,0]
+
+   my_collection = mongo.db[collection_name_a]
+   qtd_contas = len(pd.DataFrame(my_collection.find({"id_cliente": pid}, {"id": 1, "_id": 0})))
+   df_contas = list(pd.DataFrame(my_collection.find({"id_cliente": pid}, {"id": 1, "_id": 0})))
+
+   returnlist[0] = qtd_contas
+
+   my_collection = mongo.db[collection_name_b]
+   total_mov = len(pd.DataFrame(my_collection.find({"numero_conta": {'$in': df_contas}}, {"id": 1, "_id": 0})))
+   
+   returnlist[1] = total_mov
+
+   print(returnlist)
+
+   mongo.close()
+   return returnlist
+
+
 def clear_console(wait_time:int=3):
     '''
        Esse método limpa a tela após alguns segundos

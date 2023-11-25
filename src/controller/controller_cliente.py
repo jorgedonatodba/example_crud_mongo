@@ -82,12 +82,20 @@ class Controller_Cliente:
             df_cliente = self.recupera_cliente(cpf)
 
             # Cria um novo objeto Cliente
-            novo_cliente = Cliente(df_cliente.id.values[0], df_cliente.cpf.values[0], df_cliente.nome.values[0], df_cliente.endereco.values[0], df_cliente.telefone.values[0])
+            exclui_cliente = Cliente(df_cliente.id.values[0], df_cliente.cpf.values[0], df_cliente.nome.values[0], df_cliente.endereco.values[0], df_cliente.telefone.values[0])
             # Solicita ao usuário se deseja excluir o cliente
+            qtds = config.count_collection(pid=df_cliente.id.values[0])
+
+            '''print(qtds[0])
+            print(qtds[1])
+
+            from time import sleep
+            sleep(10)'''
+
             config.clear_console(1)
             print(config.MENU_DESEJA)
             # Exibe os atributos do novo cliente
-            print(novo_cliente.to_string())
+            print(exclui_cliente.to_string())
             opcao_deseja = int(input("Escolha uma opção [0-1]: "))        
 
             if opcao_deseja == 0:
@@ -95,13 +103,16 @@ class Controller_Cliente:
                 self.mongo.close()
                 return None
             
-            '''idcliente = df_cliente.id.values[0]
-            # Recupera os dados do novo cliente criado transformando em um DataFrame
-            df_cliente = self.recupera_contas(idcliente)'''
-
-
+            if qtds[1] != 0:
+                print("Registro não será excluído pois possui contas com movimentações")
+                print("Exclusão de Movimentação não pode ser realizada - Normativa do Banco Central")
+                self.mongo.close()
+                return None
+            
             # Revome o cliente da tabela
-            self.mongo.db["clientes"].delete_one({"cpf":f"{cpf}"})
+            delcontas = df_cliente.id.values[0]
+            #self.mongo.db["contas"].delete_many({"id_cliente": delcontas})
+            #self.mongo.db["clientes"].delete_one({"cpf":f"{cpf}"})
             # Cria um novo objeto Cliente para informar que foi removido
             cliente_excluido = Cliente(df_cliente.id.values[0], df_cliente.cpf.values[0], df_cliente.nome.values[0], df_cliente.endereco.values[0], df_cliente.telefone.values[0])
             self.mongo.close()
