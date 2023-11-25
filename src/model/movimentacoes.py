@@ -9,7 +9,7 @@ class Movimentacao:
                  valor:float=None,
                  saldo_anterior:float=None,
                  saldo_atual:float=None,                 
-                 conta:Conta=None
+                 conta:int=None
                  ):
         self.set_id(id)
         self.set_data(data)        
@@ -37,7 +37,7 @@ class Movimentacao:
     def set_saldo_atual(self, saldo_atual:float):
         self.saldo_atual = saldo_atual
 
-    def set_conta(self, conta:Conta):
+    def set_conta(self, conta:int):
         self.conta = conta                
 
     def get_id(self) -> int:
@@ -58,8 +58,8 @@ class Movimentacao:
     def get_saldo_atual(self) -> float:
         return self.saldo_atual
 
-    def get_conta(self) -> Conta:
+    def get_conta(self) -> int:
         return self.conta
 
     def to_string(self):
-        return f"Movimentação: {self.get_id()} | Data Mov.: {self.get_data()} | Desc.: {self.get_descricao()} | Valor: {self.get_valor()} | Conta: {self.get_conta().get_numero()}"
+        return f"Movimentação: {self.get_id()} | Data Mov.: {self.get_data()} | Desc.: {self.get_descricao()} | Valor: {self.get_valor()} | Conta: {self.get_conta()}"

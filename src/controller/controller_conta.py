@@ -126,12 +126,22 @@ class Controller_Conta:
         else:
             print(f"A Conta {nconta} não existe.")
 
-    def verifica_existencia_conta(self, nconta:str=None) -> bool:
+    def verifica_existencia_conta(self, nconta:str=None, external:bool=False) -> bool:
+        if external:
+            # Fecha a conexão com o Mongo
+            self.mongo.connect()
+
         # Recupera os dados do novo conta criado transformando em um DataFrame
         df_conta = self.recupera_conta_codigo(codigo=nconta)
+
+        if external:
+            # Fecha a conexão com o Mongo
+            self.mongo.connect()
+
         return df_conta.empty
     
     def recupera_conta_codigo(self, codigo:int=None) -> pd.DataFrame:
+
         # Recupera os dados da nova conta criada transformando em um DataFrame
         df_codigo = pd.DataFrame(list(self.mongo.db["contas"].find({"numero": codigo}, {"id": 1,  
                                                                                                           "numero": 1, 
@@ -140,6 +150,10 @@ class Controller_Conta:
                                                                                                           "limite": 1,
                                                                                                           "id_cliente": 1,
                                                                                                           "_id": 0})))
+        '''if external:
+            # Fecha a conexão com o Mongo
+            self.mongo.close()'''
+
         return df_codigo
 
     def recupera_conta(self, nconta:int=None, external:bool=False) -> pd.DataFrame:

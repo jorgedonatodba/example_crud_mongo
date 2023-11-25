@@ -86,7 +86,7 @@ def inserir(opcao_inserir:int=0):
     elif opcao_inserir == 2:
         nova_conta = ctrl_conta.inserir_conta()
     elif opcao_inserir == 3:
-        novo_fornecedor = ctrl_movimentacao.inserir_movimentacao()
+        novo_movimenta = ctrl_movimentacao.inserir_movimentacao()
 
 def atualizar(opcao_atualizar:int=0):
 
