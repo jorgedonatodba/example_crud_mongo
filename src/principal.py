@@ -1,11 +1,9 @@
 from utils import config
 from utils.splash_screen import SplashScreen
 from reports.relatorios import Relatorio
-#from controller.controller_produto import Controller_Produto
+from controller.controller_movimentacao import Controller_Movimentacao
 from controller.controller_cliente import Controller_Cliente
 from controller.controller_conta import Controller_Conta
-#from controller.controller_pedido import Controller_Pedido
-#from controller.controller_item_pedido import Controller_Item_Pedido
 
 #Solicita resposta do usuário se continua inserindo
 def deseja_continuar_inserir(popcao:int=None):
@@ -60,11 +58,9 @@ def deseja_continuar_excluir(popcao:int=None):
 
 tela_inicial = SplashScreen()
 relatorio = Relatorio()
-#ctrl_produto = Controller_Produto()
+ctrl_movimentacao = Controller_Movimentacao()
 ctrl_cliente = Controller_Cliente()
 ctrl_conta = Controller_Conta()
-#ctrl_pedido = Controller_Pedido()
-#ctrl_item_pedido = Controller_Item_Pedido()
 
 def reports(opcao_relatorio:int=0):
 
@@ -90,14 +86,7 @@ def inserir(opcao_inserir:int=0):
     elif opcao_inserir == 2:
         nova_conta = ctrl_conta.inserir_conta()
     elif opcao_inserir == 3:
-        a=1
-        #novo_fornecedor = ctrl_fornecedor.inserir_fornecedor()
-    elif opcao_inserir == 4:
-        a=1
-        #novo_pedido = ctrl_pedido.inserir_pedido()
-    elif opcao_inserir == 5:
-        a=1
-        #novo_item_pedido = ctrl_item_pedido.inserir_item_pedido()
+        novo_fornecedor = ctrl_movimentacao.inserir_movimentacao()
 
 def atualizar(opcao_atualizar:int=0):
 

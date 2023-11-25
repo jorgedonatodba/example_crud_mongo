@@ -111,10 +111,10 @@ class Controller_Conta:
             opcao_excluir = input(f"Tem certeza que deseja excluir o pedido {nconta} [S ou N]: ")
             if opcao_excluir.lower() == "s":
                 print("Atenção, caso a conta possua movimentações, a mesma não poderá ser excluída!")
-                opcao_excluir = input(f"Tem certeza que deseja excluir a conta {codigo_pedido} [S ou N]: ")
+                opcao_excluir = input(f"Tem certeza que deseja excluir a conta {nconta} [S ou N]: ")
                 if opcao_excluir.lower() == "s":
                     # Revome o produto da tabela
-                    self.mongo.db["itens_pedido"].delete_one({"codigo_pedido": codigo_pedido})
+                    self.mongo.db["contas"].delete_one({"numero": nconta})
                     print("Itens do pedido removidos com sucesso!")
                     self.mongo.db["pedidos"].delete_one({"codigo_pedido": codigo_pedido})
                     # Cria um novo objeto Produto para informar que foi removido
