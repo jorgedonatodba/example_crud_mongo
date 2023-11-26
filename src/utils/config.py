@@ -116,3 +116,8 @@ class Recupera:
             self.mongo.close()
 
         return df_px_id
+
+def print_debug(pvar,flag:bool=False) -> None:
+    if flag:
+        print(pvar)
+        print(type(pvar))

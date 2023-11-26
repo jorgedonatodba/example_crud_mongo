@@ -184,22 +184,26 @@ class Relatorio:
         print(df_pedidos_fornecedor[["empresa", "qtd_pedidos", "valor_total"]])
         input("Pressione Enter para Sair do Relatório de Fornecedores")
 
-    def get_relatorio_produtos(self):
+    def get_relatorio_contas(self):
         # Cria uma nova conexão com o banco
         mongo = MongoQueries()
         mongo.connect()
         # Recupera os dados transformando em um DataFrame
-        query_result = mongo.db["produtos"].find({}, 
-                                                 {"codigo_produto": 1, 
-                                                  "descricao_produto": 1, 
+        query_result = mongo.db["contas"].find({}, 
+                                                 {"numero": 1,
+                                                  "tipo": 1,
+                                                  "saldo": 1,
+                                                  "limite": 1,
+                                                  "id_cliente": 1,
                                                   "_id": 0
-                                                 }).sort("descricao_produto", ASCENDING)
-        df_produto = pd.DataFrame(list(query_result))
+                                                 }).sort("numero", ASCENDING)
+        
+        df_contas = pd.DataFrame(list(query_result))
         # Fecha a conexão com o Mongo
         mongo.close()
         # Exibe o resultado
-        print(df_produto)        
-        input("Pressione Enter para Sair do Relatório de Produtos")
+        print(df_contas)        
+        input("Pressione Enter para Sair do Relatório de Contas")
 
     def get_relatorio_clientes(self):
         # Cria uma nova conexão com o banco
@@ -207,7 +211,8 @@ class Relatorio:
         mongo.connect()
         # Recupera os dados transformando em um DataFrame
         query_result = mongo.db["clientes"].find({}, 
-                                                 {"nome": 1,
+                                                 {"id": 1,
+                                                  "nome": 1,
                                                   "cpf": 1,
                                                   "endereco": 1,
                                                   "telefone": 1,  
@@ -220,23 +225,26 @@ class Relatorio:
         print(df_cliente)
         input("Pressione Enter para Sair do Relatório de Clientes")
 
-    def get_relatorio_fornecedores(self):
+    def get_relatorio_movimentacoes(self):
         # Cria uma nova conexão com o banco
         mongo = MongoQueries()
         mongo.connect()
         # Recupera os dados transformando em um DataFrame
-        query_result = mongo.db["fornecedores"].find({}, 
-                                                     {"cnpj": 1, 
-                                                      "razao_social": 1, 
-                                                      "nome_fantasia": 1, 
-                                                      "_id": 0
-                                                     }).sort("nome_fantasia", ASCENDING)
-        df_fornecedor = pd.DataFrame(list(query_result))
+        query_result = mongo.db["movimentacoes"].find({}, 
+                                                 {"numero_conta": 1,
+                                                  "data": 1,
+                                                  "descricao": 1,
+                                                  "valor": 1,
+                                                  "saldo_anterior": 1,  
+                                                  "saldo_atual": 1,
+                                                  "_id": 0
+                                                 }).sort("numero_conta", ASCENDING).limit(10)
+        df_mov = pd.DataFrame(list(query_result))
         # Fecha a conexão com o mongo
         mongo.close()
         # Exibe o resultado
-        print(df_fornecedor)        
-        input("Pressione Enter para Sair do Relatório de Fornecedores")
+        print(df_mov)        
+        input("Pressione Enter para Sair do Relatório de Movimentações")
 
     def get_relatorio_pedidos(self):
         # Cria uma nova conexão com o banco

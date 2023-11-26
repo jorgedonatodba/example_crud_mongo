@@ -78,11 +78,11 @@ def deseja_continuar_atualizar_conta(popcao:int=None):
         while opcao_continua == 1:
             config.clear_console(1)
             if popcao == 1:
-                relatorio.get_relatorio_conta()
+                relatorio.get_relatorio_contas()
                 novo = ctrl_conta.atualizar_conta()
                 config.clear_console(1)
             elif popcao == 2:
-                novo = ctrl_conta.atualizar_conta()
+                novo = ctrl_conta.atualizar_contas()
             elif popcao == 3:
                 novo = ctrl_conta.atualizar_conta() 
             print(config.MENU_CONTINUA)
@@ -95,7 +95,7 @@ def deseja_continuar_excluir_conta(popcao:int=None):
         while opcao_continua == 1:
             config.clear_console(1)
             if popcao == 1:
-                relatorio.get_relatorio_conta()
+                relatorio.get_relatorio_contas()
                 novo = ctrl_conta.excluir_conta()
                 config.clear_console(3)
             elif popcao == 2:
@@ -128,7 +128,7 @@ def deseja_continuar_atualizar_mov(popcao:int=None):
         while opcao_continua == 1:
             config.clear_console(1)
             if popcao == 1:
-                relatorio.get_relatorio_movimentacao()
+                relatorio.get_relatorio_movimentacoes()
                 novo = ctrl_movimentacao.atualizar_movimentacao()
                 config.clear_console(1)
             elif popcao == 2:
@@ -139,13 +139,13 @@ def deseja_continuar_atualizar_mov(popcao:int=None):
             opcao_continua = int(input("Escolha uma opção [0-1]: "))
 
 #Solicita resposta do usuário se continua excluindo
-def deseja_continuar_excluir(popcao:int=None):
+def deseja_continuar_excluir_mov(popcao:int=None):
         print(config.MENU_CONTINUA)
         opcao_continua = int(input("Escolha uma opção [0-1]: "))
         while opcao_continua == 1:
             config.clear_console(1)
             if popcao == 1:
-                relatorio.get_relatorio_movimentacao()
+                relatorio.get_relatorio_movimentacoes()
                 novo = ctrl_movimentacao.excluir_movimentacao()
                 config.clear_console(3)
             elif popcao == 2:
@@ -167,16 +167,10 @@ def reports(opcao_relatorio:int=0):
 
     if opcao_relatorio == 1:
         relatorio.get_relatorio_clientes()            
-'''    elif opcao_relatorio == 2:
+    elif opcao_relatorio == 2:
         relatorio.get_relatorio_contas()
     elif opcao_relatorio == 3:
-        relatorio.get_relatorio_produtos()
-    elif opcao_relatorio == 4:
-        relatorio.get_relatorio_clientes()
-    elif opcao_relatorio == 5:
-        relatorio.get_relatorio_fornecedores()
-    elif opcao_relatorio == 6:
-        relatorio.get_relatorio_itens_pedidos()'''
+        relatorio.get_relatorio_movimentacoes()
 
 def inserir(opcao_inserir:int=0):
 
@@ -209,7 +203,7 @@ def atualizar(opcao_atualizar:int=0):
         deseja_continuar_atualizar_conta(1)
 
     elif opcao_atualizar == 3:
-        relatorio.get_relatorio_movimentacao()
+        relatorio.get_relatorio_movimentacoes()
         movimentacao_atualizada = ctrl_movimentacao.atualizar_movimentacao()
         config.clear_console(1)
         deseja_continuar_atualizar_mov(1)
@@ -223,18 +217,17 @@ def excluir(opcao_excluir:int=0):
         config.clear_console(1)
         deseja_continuar_excluir(1)
 
-'''    elif opcao_excluir == 2:                
-        relatorio.get_relatorio_clientes()
-        ctrl_cliente.excluir_cliente()
+    elif opcao_excluir == 2:                
+        relatorio.get_relatorio_contas()
+        ctrl_conta.excluir_contas()
+        config.clear_console(1)
+        deseja_continuar_excluir_conta(1)
+
     elif opcao_excluir == 3:                
-        relatorio.get_relatorio_fornecedores()
-        ctrl_fornecedor.excluir_fornecedor()
-    elif opcao_excluir == 4:                
-        relatorio.get_relatorio_pedidos()
-        ctrl_pedido.excluir_pedido()
-    elif opcao_excluir == 5:
-        relatorio.get_relatorio_itens_pedidos()
-        ctrl_item_pedido.excluir_item_pedido()'''
+        relatorio.get_relatorio_movimentacoes()
+        ctrl_movimentacao.excluir_movimentacao()
+        config.clear_console(1)
+        deseja_continuar_excluir_mov(1)        
 
 def run():
     print(tela_inicial.get_updated_screen())

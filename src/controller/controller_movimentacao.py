@@ -46,7 +46,7 @@ class Controller_Movimentacao:
         vcontaid = nconta.get_id()
         vcontasaldo = float(nconta.get_saldo())
         vcontalimite = float(nconta.get_limite())
-        vnumeroconta = nconta.get_numero()
+        vnumeroconta = int(nconta.get_numero())
         vsaldoatu = 0
 
         if tipomov.upper() == 'C':
@@ -71,10 +71,9 @@ class Controller_Movimentacao:
             idmov = 0
             df_px_id = pd.DataFrame(self.mongo.db["movimentacoes"].find().sort("id", -1).limit(1))
             idmov = int(df_px_id.id.values[0] + 1)
-            print(idmov)
 
             # Atualiza saldo da conta e inseri a movimentção
-            self.mongo.db["contas"].update_one({"numero": f"{vnumeroconta}"}, {"$set": {"saldo": vsaldoatu}})            
+            self.mongo.db["contas"].update_one({"numero": vnumeroconta}, {"$set": {"saldo": vsaldoatu}})            
             io_id_mov = self.mongo.db["movimentacoes"].insert_one({"id": idmov, "data": data_hoje, "descricao": vdesc, "valor": vvalor, "saldo_anterior": vsaldoant, "saldo_atual": vsaldoatu, "numero_conta": vnumeroconta})
             # Recupera os dados da nova movimentacão criado transformando em um DataFrame
             df_mov = self.recupera_movimentacao(io_id_mov.inserted_id)

@@ -2,6 +2,8 @@ import pandas as pd
 from bson import ObjectId
 from utils.config import Recupera
 
+import utils.config as cf
+
 from reports.relatorios import Relatorio
 
 from model.contas import Conta
@@ -23,9 +25,10 @@ class Controller_Conta:
         self.mongo.connect()
 
         # Solicita ao usuario o novo CNPJ
-        nconta = input("N. Conta (Nova): ")
+        nconta = int(input("N. Conta (Nova): "))
 
-        if self.verifica_existencia_conta(nconta):
+    
+        if  self.verifica_existencia_conta(nconta):
             # Solicita ao usuario o tipo da conta
             tipo = input("Tipo Conta (corrente, poupanca, credito) (Nova): ")
             # Solicita ao usuario o saldo da nova conta
@@ -60,7 +63,7 @@ class Controller_Conta:
             # Recupera os dados do novo conta criado transformando em um DataFrame
             df_conta = self.recupera_conta(nconta)
             # Cria um novo objeto conta
-            nova_conta = Conta(df_conta.id.values[0], df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0], df_conta)
+            nova_conta = Conta(df_conta.id.values[0], df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0], df_conta.id_cliente.values[0])
             # Exibe os atributos do novo conta
             print(nova_conta.to_string())
             # Retorna o objeto novo_conta para utilização posterior, caso necessário
@@ -74,10 +77,10 @@ class Controller_Conta:
         self.mongo.connect()
 
         # Solicita ao usuário o código do conta a ser alterado
-        nconta = input("Número da conta que deseja atualizar: ")
+        nconta = int(input("Número da conta que deseja atualizar: "))
 
         # Verifica se o conta existe na base de dados
-        if not self.verifica_existencia_conta(nconta):
+        if self.verifica_existencia_conta(nconta):
             # Solicita ao usuario o novo tipo da Conta
             ntipo = input("Tipo Conta (corrente, poupanca, credito): ")
             # Solicita ao usuario a nova razão social
@@ -101,11 +104,11 @@ class Controller_Conta:
         # Cria uma nova conexão com o banco que permite alteração
         self.mongo.connect()
 
-        # Solicita ao usuário o CPF do conta a ser alterado
-        nconta = input("Informar Número do conta que irá excluir: ")      
+        # Solicita ao usuário o numero do conta a ser alterado
+        nconta = int(input("Informar Número do conta que irá excluir: "))
 
         # Verifica se o conta existe na base de dados
-        if not self.verifica_existencia_conta(nconta):            
+        if self.verifica_existencia_conta(nconta):            
             # Recupera os dados do novo conta criado transformando em um DataFrame
             df_conta = self.recupera_conta(nconta)
             opcao_excluir = input(f"Tem certeza que deseja excluir o pedido {nconta} [S ou N]: ")
@@ -126,7 +129,7 @@ class Controller_Conta:
         else:
             print(f"A Conta {nconta} não existe.")
 
-    def verifica_existencia_conta(self, nconta:str=None, external:bool=False) -> bool:
+    def verifica_existencia_conta(self, nconta:int=None, external:bool=False) -> bool:
         if external:
             # Fecha a conexão com o Mongo
             self.mongo.connect()
@@ -153,7 +156,7 @@ class Controller_Conta:
         '''if external:
             # Fecha a conexão com o Mongo
             self.mongo.close()'''
-
+        
         return df_codigo
 
     def recupera_conta(self, nconta:int=None, external:bool=False) -> pd.DataFrame:
@@ -162,8 +165,8 @@ class Controller_Conta:
             self.mongo.connect()
 
         # Recupera os dados do novo cliente criado transformando em um DataFrame
-        df_conta = pd.DataFrame(list(self.mongo.db["contas"].find({"numero":f"{nconta}"}, {"id": 1, "numero": 1, "tipo": 1, "saldo": 1, "limite": 1, "id_cliente": 1, "_id": 0})))
-        
+        df_conta = pd.DataFrame(list(self.mongo.db["contas"].find({"numero": nconta}, {"id": 1, "numero": 1, "tipo": 1, "saldo": 1, "limite": 1, "id_cliente": 1, "_id": 0})))
+
         if external:
             # Fecha a conexão com o Mongo
             self.mongo.close()
