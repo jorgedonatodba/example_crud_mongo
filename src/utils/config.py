@@ -82,7 +82,7 @@ class Recupera:
     def __init__(self):
         self.mongo = MongoQueries()
     
-    def recupera_prox_id(self, pcollection:str=None, external:bool=True) -> int:
+        '''def recupera_prox_id(self, pcollection:str=None, external:bool=True) -> int:
         if external:
             # Cria uma nova conexão com o banco que permite alteração
             self.mongo.connect()
@@ -96,4 +96,23 @@ class Recupera:
             # Fecha a conexão com o Mongo
             self.mongo.close()
 
-        return px_id
+        return px_id'''
+
+    def recupera_prox_id(self, pcollection:str=None, external:bool=True) -> int:
+        if external:
+            # Cria uma nova conexão com o banco que permite alteração
+            self.mongo.connect()
+
+        # Recupera próximo id para tabela informada
+        px_id = 0
+        seq = "sequence"+pcollection
+        df_px_id = pd.DataFrame(self.mongo.db["counters"].find({"_id": f"{seq}"}))
+        df_px_id = int(df_px_id.sequence.values[0])
+        px_id = df_px_id + 1
+        self.mongo.db["counters"].update_one({"_id": f"{seq}"}, {"$set": {"sequence": px_id}})
+        
+        if external:
+            # Fecha a conexão com o Mongo
+            self.mongo.close()
+
+        return df_px_id

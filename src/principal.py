@@ -32,9 +32,9 @@ def deseja_continuar_atualizar(popcao:int=None):
                 novo = ctrl_cliente.atualizar_cliente()
                 config.clear_console(1)
             elif popcao == 2:
-                novo = ctrl_cliente.inserir_cliente()
+                novo = ctrl_cliente.atualizar_cliente()
             elif popcao == 3:
-                novo = ctrl_cliente.inserir_cliente() 
+                novo = ctrl_cliente.atualizar_cliente() 
             print(config.MENU_CONTINUA)
             opcao_continua = int(input("Escolha uma opção [0-1]: "))
 
@@ -49,11 +49,112 @@ def deseja_continuar_excluir(popcao:int=None):
                 novo = ctrl_cliente.excluir_cliente()
                 config.clear_console(3)
             elif popcao == 2:
-                novo = ctrl_cliente.inserir_cliente()
+                novo = ctrl_cliente.excluir_cliente()
             elif popcao == 3:
-                novo = ctrl_cliente.inserir_cliente() 
+                novo = ctrl_cliente.excluir_cliente() 
             print(config.MENU_CONTINUA)
             opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
+#Solicita resposta do usuário se continua inserindo
+def deseja_continuar_inserir_conta(popcao:int=None):
+        print(config.MENU_CONTINUA)
+        opcao_continua = int(input("Escolha uma opção [0-1]: "))
+        while opcao_continua == 1:
+            config.clear_console(1)
+            if popcao == 1:
+                novo = ctrl_conta.inserir_conta()
+                config.clear_console(1)
+            elif popcao == 2:
+                novo = ctrl_conta.inserir_conta()
+            elif popcao == 3:
+                novo = ctrl_conta.inserir_conta() 
+            print(config.MENU_CONTINUA)
+            opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
+#Solicita resposta do usuário se continua atualizando
+def deseja_continuar_atualizar_conta(popcao:int=None):
+        print(config.MENU_CONTINUA)
+        opcao_continua = int(input("Escolha uma opção [0-1]: "))
+        while opcao_continua == 1:
+            config.clear_console(1)
+            if popcao == 1:
+                relatorio.get_relatorio_conta()
+                novo = ctrl_conta.atualizar_conta()
+                config.clear_console(1)
+            elif popcao == 2:
+                novo = ctrl_conta.atualizar_conta()
+            elif popcao == 3:
+                novo = ctrl_conta.atualizar_conta() 
+            print(config.MENU_CONTINUA)
+            opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
+#Solicita resposta do usuário se continua excluindo
+def deseja_continuar_excluir_conta(popcao:int=None):
+        print(config.MENU_CONTINUA)
+        opcao_continua = int(input("Escolha uma opção [0-1]: "))
+        while opcao_continua == 1:
+            config.clear_console(1)
+            if popcao == 1:
+                relatorio.get_relatorio_conta()
+                novo = ctrl_conta.excluir_conta()
+                config.clear_console(3)
+            elif popcao == 2:
+                novo = ctrl_conta.excluir_conta()
+            elif popcao == 3:
+                novo = ctrl_conta.excluir_conta() 
+            print(config.MENU_CONTINUA)
+            opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
+#Solicita resposta do usuário se continua inserindo
+def deseja_continuar_inserir_mov(popcao:int=None):
+        print(config.MENU_CONTINUA)
+        opcao_continua = int(input("Escolha uma opção [0-1]: "))
+        while opcao_continua == 1:
+            config.clear_console(1)
+            if popcao == 1:
+                novo = ctrl_movimentacao.inserir_movimentacao()
+                config.clear_console(1)
+            elif popcao == 2:
+                novo = ctrl_movimentacao.inserir_movimentacao()
+            elif popcao == 3:
+                novo = ctrl_movimentacao.inserir_movimentacao() 
+            print(config.MENU_CONTINUA)
+            opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
+#Solicita resposta do usuário se continua atualizando
+def deseja_continuar_atualizar_mov(popcao:int=None):
+        print(config.MENU_CONTINUA)
+        opcao_continua = int(input("Escolha uma opção [0-1]: "))
+        while opcao_continua == 1:
+            config.clear_console(1)
+            if popcao == 1:
+                relatorio.get_relatorio_movimentacao()
+                novo = ctrl_movimentacao.atualizar_movimentacao()
+                config.clear_console(1)
+            elif popcao == 2:
+                novo = ctrl_movimentacao.atualizar_movimentacao()
+            elif popcao == 3:
+                novo = ctrl_movimentacao.atualizar_movimentacao() 
+            print(config.MENU_CONTINUA)
+            opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
+#Solicita resposta do usuário se continua excluindo
+def deseja_continuar_excluir(popcao:int=None):
+        print(config.MENU_CONTINUA)
+        opcao_continua = int(input("Escolha uma opção [0-1]: "))
+        while opcao_continua == 1:
+            config.clear_console(1)
+            if popcao == 1:
+                relatorio.get_relatorio_movimentacao()
+                novo = ctrl_movimentacao.excluir_movimentacao()
+                config.clear_console(3)
+            elif popcao == 2:
+                novo = ctrl_movimentacao.excluir_movimentacao()
+            elif popcao == 3:
+                novo = ctrl_movimentacao.excluir_movimentacao() 
+            print(config.MENU_CONTINUA)
+            opcao_continua = int(input("Escolha uma opção [0-1]: "))
+
 
 
 tela_inicial = SplashScreen()
@@ -85,8 +186,13 @@ def inserir(opcao_inserir:int=0):
         deseja_continuar_inserir(1)
     elif opcao_inserir == 2:
         nova_conta = ctrl_conta.inserir_conta()
+        config.clear_console(1)
+        deseja_continuar_inserir_conta(1)
     elif opcao_inserir == 3:
         novo_movimenta = ctrl_movimentacao.inserir_movimentacao()
+        config.clear_console(1)
+        deseja_continuar_inserir_mov(1)
+
 
 def atualizar(opcao_atualizar:int=0):
 
@@ -97,17 +203,17 @@ def atualizar(opcao_atualizar:int=0):
         deseja_continuar_atualizar(1)
 
     elif opcao_atualizar == 2:
-        #relatorio.get_relatorio_contas()
+        relatorio.get_relatorio_contas()
         conta_atualizada = ctrl_conta.atualizar_conta()
-'''    elif opcao_atualizar == 3:
-        relatorio.get_relatorio_fornecedores()
-        fornecedor_atualizado = ctrl_fornecedor.atualizar_fornecedor()
-    elif opcao_atualizar == 4:
-        relatorio.get_relatorio_pedidos()
-        pedido_atualizado = ctrl_pedido.atualizar_pedido()
-    elif opcao_atualizar == 5:
-        relatorio.get_relatorio_itens_pedidos()
-        item_pedido_atualizado = ctrl_item_pedido.atualizar_item_pedido()'''
+        config.clear_console(1)
+        deseja_continuar_atualizar_conta(1)
+
+    elif opcao_atualizar == 3:
+        relatorio.get_relatorio_movimentacao()
+        movimentacao_atualizada = ctrl_movimentacao.atualizar_movimentacao()
+        config.clear_console(1)
+        deseja_continuar_atualizar_mov(1)
+
 
 def excluir(opcao_excluir:int=0):
 
