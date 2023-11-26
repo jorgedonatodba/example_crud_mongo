@@ -44,6 +44,9 @@ def extract_and_insert(plista:list=None) -> list:
     for collection in LIST_OF_COLLECTIONS:
         if collection != "counters":
             df = oracle.sqlToDataFrame(sql.format(table=collection))
+            sql = f"select seq_{collection}_id.nextval as num from dual"
+            df_qtd = oracle.sqlToDataFrame(sql)
+
             sql = f"select seq_{collection}_id.currval +1 as num from dual"
             df_qtd = oracle.sqlToDataFrame(sql)
             qtd = int(df_qtd.num.values[0])
