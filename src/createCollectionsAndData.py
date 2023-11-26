@@ -40,20 +40,21 @@ def insert_many(data:json, collection:str):
 def extract_and_insert(plista:list=None) -> list:
     oracle = OracleQueries()
     oracle.connect()
-    sql = "select * from ivie.{table}"
+    sql1 = "select * from ivie.{table}"
     for collection in LIST_OF_COLLECTIONS:
         if collection != "counters":
-            df = oracle.sqlToDataFrame(sql.format(table=collection))
-            sql = f"select seq_{collection}_id.nextval as num from dual"
-            df_qtd = oracle.sqlToDataFrame(sql)
+            df = oracle.sqlToDataFrame(sql1.format(table=collection))
+            if collection == "movimentacoes":
+                df["data"] = df["data"].dt.strftime("%m-%d-%Y")
 
-            sql = f"select seq_{collection}_id.currval +1 as num from dual"
-            df_qtd = oracle.sqlToDataFrame(sql)
+            sql2 = f"select seq_{collection}_id.nextval as num from dual"
+            df_qtd1 = oracle.sqlToDataFrame(sql2)
+
+            sql3 = f"select seq_{collection}_id.currval +1 as num from dual"
+            df_qtd = oracle.sqlToDataFrame(sql3)
             qtd = int(df_qtd.num.values[0])
             plista.append(qtd)
 
-            if collection == "movimentacoes":
-                df["data"] = df["data"].dt.strftime("%m-%d-%Y")
             logger.warning(f"data extracted from database Oracle ivie.{collection}")
             records = json.loads(df.T.to_json()).values()
             logger.warning("data converted to json")
@@ -67,7 +68,7 @@ def setar_sequences(plista:list=None) -> None:
     for collection in LIST_OF_COLLECTIONS:
         if collection != "counters":
             i = i +1
-            mongo.db["counters"].insert_one({"_id": f"sequence{collection}","sequence": 0})
+            mongo.db["counters"].insert_one({"_id": f"sequence{collection}","sequence": plista[i]})
 
     mongo.close()
 
