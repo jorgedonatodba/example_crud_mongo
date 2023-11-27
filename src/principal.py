@@ -219,7 +219,7 @@ def excluir(opcao_excluir:int=0):
 
     elif opcao_excluir == 2:                
         relatorio.get_relatorio_contas()
-        ctrl_conta.excluir_contas()
+        ctrl_conta.excluir_conta()
         config.clear_console(1)
         deseja_continuar_excluir_conta(1)
 

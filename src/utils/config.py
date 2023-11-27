@@ -1,6 +1,8 @@
 from conexion.mongo_queries import MongoQueries
 import pandas as pd
 
+PRINTA_DEBUG = True
+
 MENU_PRINCIPAL = """Menu Principal
 1 - Relatórios
 2 - Inserir Registros
@@ -29,7 +31,7 @@ MENU_CONTINUA = """Deseja continuar?
 1 - SIM
 """
 
-MENU_DESEJA = """Deseja mesmo excluir o registro abaixo?
+MENU_DESEJA = """Deseja mesmo excluir o registro?
 0 - NÃO
 1 - SIM
 """
@@ -45,24 +47,45 @@ def query_count(collection_name):
    df = pd.DataFrame({f"total_{collection_name}": [total_documentos]})
    return df
 
-def count_collection(collection_name_a:str="contas", collection_name_b:str="movimentacoes" , pid:int=None) -> list:
+def count_collection(flag:bool,collection_name_a:str="contas", collection_name_b:str="movimentacoes" , pid:int=None) -> list:
    mongo = MongoQueries()
    mongo.connect()
    pid = int(pid)
    returnlist = [0,0]
+   total_mov = 0
+   llistacontas = list()
+   novallistacontas = list()
 
    my_collection = mongo.db[collection_name_a]
-   qtd_contas = len(pd.DataFrame(my_collection.find({"id_cliente": pid}, {"id": 1, "_id": 0})))
-   df_contas = list(pd.DataFrame(my_collection.find({"id_cliente": pid}, {"id": 1, "_id": 0})))
+   if flag:
+    qtd_contas = len(pd.DataFrame(my_collection.find({"id_cliente": pid}, {"id": 1, "_id": 0})))
+    df_contas = pd.DataFrame(my_collection.find({"id_cliente": pid}, {"numero": 1, "_id": 0}))
+   else:
+    qtd_contas = len(pd.DataFrame(my_collection.find({"numero": pid}, {"numero": 1, "_id": 0})))
+    df_contas = pd.DataFrame(my_collection.find({"numero": pid}, {"numero": 1, "_id": 0}))
+
+   print_debug(df_contas,PRINTA_DEBUG)
+
+   if not df_contas.empty:
+     llistacontas = list(df_contas.numero.values)
+
+   for conta in llistacontas:
+    novallistacontas.append(int(conta))
 
    returnlist[0] = qtd_contas
 
+   print_debug(novallistacontas,PRINTA_DEBUG)
+
    my_collection = mongo.db[collection_name_b]
-   total_mov = len(pd.DataFrame(my_collection.find({"numero_conta": {'$in': df_contas}}, {"id": 1, "_id": 0})))
-   
+   df_mov = pd.DataFrame(my_collection.find({"numero_conta": {'$in': novallistacontas}}, {"id": 1, "_id": 0}))
+   if not df_mov.empty:
+    total_mov = int(df_mov.id.count())
+   else:
+      total_mov = 0
+
    returnlist[1] = total_mov
 
-   print(returnlist)
+   print_debug(returnlist,PRINTA_DEBUG)
 
    mongo.close()
    return returnlist
@@ -121,3 +144,5 @@ def print_debug(pvar,flag:bool=False) -> None:
     if flag:
         print(pvar)
         print(type(pvar))
+        from time import sleep
+        sleep(10)

@@ -238,7 +238,7 @@ class Relatorio:
                                                   "saldo_anterior": 1,  
                                                   "saldo_atual": 1,
                                                   "_id": 0
-                                                 }).sort("numero_conta", ASCENDING).limit(10)
+                                                 }).sort("numero_conta", ASCENDING)
         df_mov = pd.DataFrame(list(query_result))
         # Fecha a conexão com o mongo
         mongo.close()
