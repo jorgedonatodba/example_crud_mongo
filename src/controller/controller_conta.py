@@ -84,7 +84,7 @@ class Controller_Conta:
             # Solicita ao usuario o novo tipo da Conta
             ntipo = input("Tipo Conta (corrente, poupanca, credito): ")
             # Solicita ao usuario a nova razão social
-            nlimite = input("Novo Limite: ")
+            nlimite = float(input("Novo Limite: "))
            
             # Updating fan quantity from 10 to 25.
             filter = { 'numero': nconta }
