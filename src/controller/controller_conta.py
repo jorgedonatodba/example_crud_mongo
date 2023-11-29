@@ -84,7 +84,7 @@ class Controller_Conta:
             # Solicita ao usuario o novo tipo da Conta
             ntipo = input("Tipo Conta (corrente, poupanca, credito): ")
             # Solicita ao usuario a nova razão social
-            nlimite = float(input("Novo Limite: "))
+            nlimite = input("Novo Limite: ")
            
             # Updating fan quantity from 10 to 25.
             filter = { 'numero': nconta }
@@ -117,25 +117,33 @@ class Controller_Conta:
             # Recupera os dados do novo conta criado transformando em um DataFrame
             df_conta = self.recupera_conta(nconta)
             
-            opcao_excluir = input(f"Tem certeza que deseja excluir a conta {nconta}? [S ou N]: ")
-            if opcao_excluir.lower() == "s":
-                print("Atenção, caso a conta possua movimentações, a mesma não poderá ser excluída!")
-                numconta = df_conta.numero.values[0]
-                llistadel = cf.count_collection(flag=False, pid=int(numconta))
-                if llistadel[1] > 0:
-                    print("Atenção, conta com movimentações não pode ser excluída!")
-                    print("Exclusão de Movimentação não pode ser realizada - Normativa do Banco Central")
-                    self.mongo.close()
-                    return None
+            cf.clear_console(1)
+            print(cf.MENU_DESEJA)
+            # Exibe os atributos do novo cliente
+            opcao_deseja = int(input("Escolha uma opção [0-1]: "))        
 
-                # Revome a conta da tabela
-                self.mongo.db["contas"].delete_one({"id": int(df_conta.id.values[0])})
-                print("Conta excuída com sucesso!")
-                # Cria um novo objeto conta para informar que foi removida
-                conta_excluida = Conta(df_conta.id.values[0],df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0], df_conta.id_cliente.values[0])
+            if opcao_deseja == 0:
+                print("Registro não será excluído")
                 self.mongo.close()
-                # Exibe os atributos do produto excluído
-                print(conta_excluida.to_string())
+                return None
+            
+            print("Atenção, caso a conta possua movimentações, a mesma não poderá ser excluída!")
+            numconta = df_conta.numero.values[0]
+            llistadel = cf.count_collection(flag=False, pid=int(numconta))
+            if llistadel[1] > 0:
+                print("Atenção, conta com movimentações não pode ser excluída!")
+                print("Exclusão de Movimentação não pode ser realizada - Normativa do Banco Central")
+                self.mongo.close()
+                return None
+                        
+            # Revome a conta da tabela
+            self.mongo.db["contas"].delete_one({"id": int(df_conta.id.values[0])})
+            print("Conta excuída com sucesso!")
+            # Cria um novo objeto conta para informar que foi removida
+            conta_excluida = Conta(df_conta.id.values[0],df_conta.numero.values[0], df_conta.tipo.values[0], df_conta.saldo.values[0], df_conta.limite.values[0], df_conta.id_cliente.values[0])
+            self.mongo.close()
+            # Exibe os atributos do produto excluído
+            print(conta_excluida.to_string())
         else:
             print(f"A Conta {nconta} não existe.")
 

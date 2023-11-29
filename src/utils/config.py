@@ -1,7 +1,7 @@
 from conexion.mongo_queries import MongoQueries
 import pandas as pd
 
-PRINTA_DEBUG = True
+PRINTA_DEBUG = False
 
 MENU_PRINCIPAL = """Menu Principal
 1 - Relatórios

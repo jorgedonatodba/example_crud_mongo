@@ -182,7 +182,7 @@ class Relatorio:
         mongo.close()
         # Exibe o resultado
         print(df_pedidos_fornecedor[["empresa", "qtd_pedidos", "valor_total"]])
-        input("Pressione Enter para Sair do Relatório de Fornecedores")
+        input("Pressione Enter para Sair do Relatório de Tipo de Contas Por Cliente")
 
     def get_relatorio_produtos(self):
         # Cria uma nova conexão com o banco
